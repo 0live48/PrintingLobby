@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Printing Lobby | Proxies & Art</title>
+    <title>Printiology | Science & Art</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     
@@ -129,7 +129,7 @@
         <div class="container mx-auto px-4 py-4 flex justify-between items-center">
             <div class="flex items-center gap-3 cursor-pointer" onclick="showMainPage()">
                 <i class="fa-solid fa-dragon text-mystic-gold text-2xl"></i>
-                <h1 class="font-fantasy text-2xl text-white tracking-wider">Printing Lobby</h1>
+                <h1 class="font-fantasy text-2xl text-white tracking-wider">Printiology</h1>
             </div>
         </div>
     </nav>
@@ -218,12 +218,12 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <div class="holo-card bg-mystic-800 rounded-xl overflow-hidden p-6 flex flex-col md:flex-row gap-6">
                         <div class="w-full md:w-1/2 h-64 bg-black rounded-lg overflow-hidden border border-gray-700 relative">
-                            <img src="img/1.png" alt="Soul Stone Poster" class="w-full h-full object-cover hover:scale-105 transition duration-700">
+                            <img src="img/2.png" alt="Soul Stone Poster" class="w-full h-full object-cover hover:scale-105 transition duration-700">
                         </div>
 
                         <div class="w-full md:w-1/2 flex flex-col justify-center">
                             <h4 class="text-2xl font-bold text-white mb-2 font-fantasy">Soul Stone Poster</h4>
-                            <p class="text-gray-400 text-sm mb-4">Witness the shimmer of raw power in stunning holographic foil.</p>
+                            <p class="text-gray-400 text-sm mb-4">(8" x 10") Witness the shimmer of raw power in stunning holographic foil.</p>
                             <div class="mt-auto">
                                 <div class="flex justify-between items-end mb-4">
                                     <span class="text-3xl font-bold text-mystic-gold">$18.99</span>
@@ -235,12 +235,12 @@
 
                     <div class="holo-card bg-mystic-800 rounded-xl overflow-hidden p-6 flex flex-col md:flex-row gap-6">
                         <div class="w-full md:w-1/2 h-64 bg-black rounded-lg overflow-hidden border border-gray-700 relative">
-                            <img src="img/2.png" alt="LOTR Poster" class="w-full h-full object-cover hover:scale-105 transition duration-700">
+                            <img src="img/1.png" alt="LOTR Poster" class="w-full h-full object-cover hover:scale-105 transition duration-700">
                         </div>
 
                         <div class="w-full md:w-1/2 flex flex-col justify-center">
                             <h4 class="text-2xl font-bold text-white mb-2 font-fantasy">The One Ring Poster</h4>
-                            <p class="text-gray-400 text-sm mb-4">Lord of the Rings crossover art. Deep holographic shimmer.</p>
+                            <p class="text-gray-400 text-sm mb-4">(8" x 10") Lord of the Rings crossover art. Deep holographic shimmer.</p>
                             <div class="mt-auto">
                                 <div class="flex justify-between items-end mb-4">
                                     <span class="text-3xl font-bold text-mystic-gold">$18.99</span>
@@ -300,7 +300,7 @@
                                             "color": "#1a0b2e"
                                         },
                                         "border-radius": "8px"
-                                     }
+                                       }
                                     },
                                     "contents": {
                                         "img": false,
@@ -395,7 +395,7 @@
 
             <div id="shopify-buy-container" class="hidden mt-6 p-6 bg-green-900 bg-opacity-30 border border-green-600 rounded-lg text-center">
                 <p class="text-green-400 font-bold mb-4"><i class="fa-solid fa-check-circle"></i> List Received! Reference ID: <span id="success-ref-id" class="text-white"></span></p>
-                <p class="text-gray-300 text-sm mb-4">Now add the product to your cart:</p>
+                <p class="text-gray-300 text-sm mb-4">Your reference ID has been attached. Click below to purchase:</p>
                 
                 <div id="dynamic-shopify-button" class="flex justify-center"></div>
             </div>
@@ -403,7 +403,7 @@
     </div>
 
     <footer class="bg-black py-8 border-t border-mystic-700 text-center mt-auto">
-        <p class="text-gray-500 text-sm">&copy; 2025 Printing Lobby. All rights reserved.</p>
+        <p class="text-gray-500 text-sm">&copy; 2025 Printiology. All rights reserved.</p>
     </footer>
 
     <script type="text/javascript">
@@ -462,16 +462,30 @@
       }
     })();
 
-    // 3. Helper to Render Button
-    function renderShopifyButton(productId, nodeId) {
+    // 3. Helper to Render Button (Updated with DIRECT Redirect)
+    function renderShopifyButton(productId, nodeId, refId = null) {
         if(!shopifyUI) return;
         
+        // Clear previous button if it exists
+        const node = document.getElementById(nodeId);
+        node.innerHTML = ''; 
+
         shopifyUI.createComponent('product', {
             id: productId,
-            node: document.getElementById(nodeId),
+            node: node,
             moneyFormat: '%24%7B%7Bamount%7D%7D',
             options: {
                 "product": {
+                    // --- UPDATE: Listen for Add To Cart and Redirect ---
+                    "events": {
+                        "addVariantToCart": function (cartLineItem, cartModel) {
+                            console.log("Item added. Redirecting to checkout...");
+                            // 1. Grab the checkout URL from the cart model
+                            const checkoutUrl = cartModel.model.webUrl;
+                            // 2. Force the browser to go there immediately in the same window
+                            window.location.href = checkoutUrl;
+                        }
+                    },
                     "styles": {
                         "product": {
                             "@media (min-width: 601px)": {
@@ -501,7 +515,8 @@
                         "price": false
                     },
                     "text": {
-                        "button": "Add to Cart"
+                        // Changed text to match behavior
+                        "button": "Buy Now"
                     }
                 },
                 "productSet": {
@@ -511,17 +526,6 @@
                                 "margin-left": "-20px"
                             }
                         }
-                    }
-                },
-                "modalProduct": {
-                    "contents": {
-                        "img": false,
-                        "imgWithCarousel": true,
-                        "button": false,
-                        "buttonWithQuantity": true
-                    },
-                    "text": {
-                        "button": "Add to cart"
                     }
                 },
                 "cart": {
@@ -536,10 +540,26 @@
                         "total": "Subtotal",
                         "button": "Checkout"
                     },
-                    "popup": false  // <--- THIS SETTING PREVENTS THE NEW WINDOW
+                    "popup": true 
                 }
             }
-        }).catch(e => console.warn("Shopify Product Not Found:", productId));
+        }).then(function(component) {
+            // --- NOTE INJECTION (Happens silently on load) ---
+            if (refId) {
+                console.log("%c SUCCESS: Shopify Component Created", "color: green; font-weight: bold;");
+                if (component.cart) {
+                    let currentNote = component.cart.model.note || "";
+                    if(currentNote.indexOf(refId) === -1) {
+                         let newNote = currentNote 
+                            ? currentNote + "\nDeck Ref: " + refId 
+                            : "Deck Ref: " + refId;
+                         component.cart.update({ note: newNote }).then(() => {
+                             console.log("Note attached successfully.");
+                         });
+                    }
+                }
+            }
+        });
     }
 
     // --- VIEW NAVIGATION ---
@@ -614,14 +634,16 @@
                 document.getElementById('success-ref-id').innerText = refId;
                 
                 let shopifyId = SHOPIFY_PRODUCT_IDS[currentBuilderId];
-                renderShopifyButton(shopifyId, 'dynamic-shopify-button');
+                
+                // Pass Ref ID to the button renderer
+                renderShopifyButton(shopifyId, 'dynamic-shopify-button', refId);
 
             } else {
                 alert("Error sending data: " + data.message);
                 resetBtn();
             }
         })
-       
+        
     }
 
     function resetBtn() {
